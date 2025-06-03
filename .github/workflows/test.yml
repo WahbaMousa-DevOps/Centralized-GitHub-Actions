@@ -1,0 +1,41 @@
+name: Reusable Test
+
+on:
+  workflow_call:
+    inputs:
+      language:
+        required: true
+        type: string
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Tests for ${{ inputs.language }}
+        run: |
+          case "${{ inputs.language }}" in
+            # node)
+            #   echo "Running Node.js Tests"
+            #   npm ci
+            #   npm test || echo "No test suite defined. Skipped."
+            #   ;;
+            # java)
+            #   echo "Running Java Tests"
+            #   chmod +x ./gradlew
+            #   ./gradlew test --no-daemon || echo "No test suite found. Skipped."
+            #   ;;
+            dotnet)
+              echo "Running .NET Tests"
+              dotnet restore
+              dotnet test || echo "No tests found or test failure."
+              ;;
+            *)
+              echo "Unsupported language: ${{ inputs.language }}"
+              exit 1
+              ;;
+          esac

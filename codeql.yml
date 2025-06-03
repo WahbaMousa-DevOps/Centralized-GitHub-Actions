@@ -1,0 +1,19 @@
+name: "CodeQL config for repo-level analysis"
+
+queries:
+  - uses: security-and-quality
+
+paths:
+  - src
+  - app
+  - backend
+  - frontend
+  - scripts/
+  - docker/
+
+paths-ignore:
+  - node_modules
+  - dist
+  - build
+  - tests/mocks
+  - .github/

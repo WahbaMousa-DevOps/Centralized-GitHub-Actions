@@ -1,0 +1,32 @@
+name: CI - Centralized GitHub Actions Repo Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  scan:
+    uses: ./.github/workflows/scan.yml
+    # with:
+    #   language: dotnet  # Required if scan.yml uses it
+
+  trivy:
+    uses: ./.github/workflows/trivy.yml
+
+  codeql:
+    uses: ./.github/workflows/codeql.yml
+
+  notify:
+    uses: ./.github/workflows/ntoify.yml
+
+  sbom:
+    uses: ./.github/workflows/sbom.yml
+
+  test:
+    uses: ./.github/workflows/test.yml
+
+  lint:
+    uses: ./.github/workflows/lint.yml

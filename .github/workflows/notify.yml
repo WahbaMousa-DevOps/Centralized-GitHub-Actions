@@ -1,0 +1,36 @@
+name: Reusable Notify
+
+on:
+  workflow_call:
+    inputs:
+      status:
+        required: true
+        type: string
+      message:
+        required: true
+        type: string
+    secrets:
+      SLACK_WEBHOOK:
+        required: false
+      GH_TOKEN:
+        required: false
+
+jobs:
+  notify:
+    name: Send Notification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Slack Message
+        if: ${{ secrets.SLACK_WEBHOOK != '' }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{\"text\": \"[${{ inputs.status }}] ${{ inputs.message }}\"}" \
+          ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Add GitHub PR Comment
+        if: ${{ github.event_name == 'pull_request' && secrets.GH_TOKEN != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --body "[${{ inputs.status }}] ${{ inputs.message }}"
