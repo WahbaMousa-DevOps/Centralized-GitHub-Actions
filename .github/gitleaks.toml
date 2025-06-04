@@ -1,0 +1,29 @@
+title = "Enhanced Security Config"
+
+[allowlist]
+  paths = ["docs/", "README.md", "*.spec.js"]  # Add test files
+
+# Allow specific test values
+[[allowlist.regexes]]
+  regex = '''test_api_key_[\w]{32}'''
+
+# High-risk secrets
+[[rules]]
+  id = "aws-access-key"
+  description = "AWS Access Key"
+  regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+  severity = "high"
+
+[[rules]]
+  id = "google-api-key"
+  description = "Google API Key"
+  regex = '''AIza[0-9A-Za-z\\-_]{35}'''
+  severity = "critical"
+
+# Add entropy checks
+[[rules]]
+  id = "high-entropy-string"
+  description = "High entropy string"
+  regex = '''[a-f0-9]{64}'''
+  entropy = 4.5  # Adjust based on your needs
+  severity = "medium"

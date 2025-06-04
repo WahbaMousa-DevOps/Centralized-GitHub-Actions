@@ -15,23 +15,96 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Essential for full history scans
 
-      - name: Gitleaks Scan # Scans Git history and source code for hardcoded secrets (tokens, keys)
+      # ===== GITLEAKS SCAN =====
+      - name: Run Gitleaks (with diagnostic logs)
+        id: gitleaks
         uses: gitleaks/gitleaks-action@v2
         with:
-          config-path: ./gitleaks.toml
+          config-path: ${{ github.workspace }}/gitleaks.toml
+          report-format: json  # Machine-readable format
+          verbose: true        # Enable detailed logging
+          redact: false        # Keep full context for debugging
+        env:
+          GITLEAKS_LOG_LEVEL: debug  # Maximum verbosity
         continue-on-error: true
 
-      - name: git-secrets Scan # Detects AWS keys/secrets in Git — prevents adding them locally
+      # ===== GIT-SECRETS SCAN ===== 
+      - name: Install git-secrets
+        run: sudo apt-get install -y git-secrets
+
+      - name: Configure git-secrets
         run: |
-          git clone https://github.com/awslabs/git-secrets.git
-          cd git-secrets && sudo make install && cd ..
-          git secrets --install
+          git secrets --install -f
           git secrets --register-aws
-          git secrets --scan || echo "git-secrets scan skipped or failed."
+
+      - name: Scan with git-secrets (capture logs)
+        id: gitsecrets
+        run: |
+          # Capture full output with timestamps
+          echo "Starting scan at $(date)" > gitsecrets.log
+          git secrets --scan --no-index -r 2>&1 | tee -a gitsecrets.log
+          echo "Exit code: $?" >> gitsecrets.log
+        continue-on-error: true
+
+      # ===== UNIVERSAL LOG CAPTURE =====
+      - name: Package diagnostic artifacts
+        if: always()  # CRITICAL: Runs even on failure
+        run: |
+          # Create timestamped directory
+          TS=$(date +%Y%m%d_%H%M%S)
+          mkdir -p diagnostics/$TS
+          
+          # Collect Gitleaks artifacts
+          [ -f gitleaks-report.json ] && mv gitleaks-report.json diagnostics/$TS/
+          [ -f gitleaks.log ] && mv gitleaks.log diagnostics/$TS/
+          
+          # Collect git-secrets log
+          mv gitsecrets.log diagnostics/$TS/
+          
+          # System context
+          echo "Workflow Context" > diagnostics/$TS/environment.txt
+          echo "Job ID: ${{ github.job }}" >> diagnostics/$TS/environment.txt
+          echo "Run ID: ${{ github.run_id }}" >> diagnostics/$TS/environment.txt
+          echo "Event: ${{ github.event_name }}" >> diagnostics/$TS/environment.txt
+
+      - name: Upload Diagnostic Bundle
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-scan-diagnostics
+          path: diagnostics/
+          retention-days: 90
+
+      # ===== INTELLIGENT FAILURE HANDLING =====
+      - name: Evaluate Scan Results
+        if: always()
+        run: |
+          # Check if either scan detected critical issues
+          if [[ "${{ steps.gitleaks.outcome }}" == 'failure' ]] || \
+             [[ "${{ steps.gitsecrets.outcome }}" == 'failure' ]]; then
+             
+            echo "::error::CRITICAL: Secrets detected! Review diagnostic artifacts"
+            
+            # Generate security alert (visible in Actions UI)
+            echo "SECURITY_ALERT=true" >> $GITHUB_ENV
+            
+            # Optional: Send Slack/Teams alert
+            # (Implement your notification logic here)
+          else
+            echo "::notice::Security scans passed successfully"
+          fi
+
+      - name: Enforce Security Gate
+        if: ${{ env.SECURITY_ALERT == 'true' }}
+        run: exit 1  # Hard fail after artifacts are captured
 
   call-audit-log:
+    needs: [scan]
+    if: always()
     uses: WahbaMousa-DevOps/CENTRALIZED-GITHUB-ACTIONS/.github/workflows/audit.yml@main
     with:
-      audit_message: "Scan job completed successfully."
-      job_name: "scan"
+      audit_message: "Scan completed: ${{ needs.scan.result }} | Diagnostics: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      job_name: "security-scan"
