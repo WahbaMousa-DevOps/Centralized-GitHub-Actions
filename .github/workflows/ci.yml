@@ -14,7 +14,7 @@ jobs:
       language: dotnet
     secrets:
       READ_PAT: ${{ secrets.READ_PAT }}
-      SLACK_SECURITY_BOT_TOKEN: ${{ secrets.SLACK_SECURITY_BOT_TOKEN }} # Required if scan.yml uses it
+      SLACK_SECURITY_BOT_TOKEN: ${{ secrets.SLACK_SECURITY_BOT_TOKEN }} 
 
   trivy:
     uses: ./.github/workflows/trivy.yml
