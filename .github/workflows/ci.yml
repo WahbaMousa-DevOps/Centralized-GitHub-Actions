@@ -11,7 +11,10 @@ jobs:
   scan:
     uses: ./.github/workflows/scan.yml
     with:
-      language: dotnet  # Required if scan.yml uses it
+      language: dotnet
+    secrets:
+      READ_PAT: ${{ secrets.READ_PAT }}
+      SLACK_SECURITY_BOT_TOKEN: ${{ secrets.SLACK_SECURITY_BOT_TOKEN }} # Required if scan.yml uses it
 
   trivy:
     uses: ./.github/workflows/trivy.yml
@@ -39,6 +42,6 @@ jobs:
     uses: ./.github/workflows/test.yml
     with:
         language: dotnet 
-        
+
   lint:
     uses: ./.github/workflows/lint.yml
