@@ -1,6 +1,19 @@
 # Centralized-GitHub-Actions
 📦Centralized GitHub Actions for all microservices
+Cleanup Schedule Optimization:
 
+Run cleanup during off-peak hours
+
+Stagger cleanups for different repos:
+
+yaml
+matrix:
+  repo: [repo1, repo2, repo3]
+  include:
+    - repo: repo1
+      cron: '0 1 * * *'  # 1 AM
+    - repo: repo2
+      cron: '0 2 * * *'  # 2 AM
 
 # 🚀 Centralized GitHub Actions - Enterprise CI/CD Orchestration
 

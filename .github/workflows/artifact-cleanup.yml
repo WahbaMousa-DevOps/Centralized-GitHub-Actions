@@ -1,0 +1,20 @@
+name: Artifact Retention Cleanup
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo: [repo1, repo2, repo3]  # List all consuming repos
+    steps:
+      - name: Purge old artifacts
+        uses: kolpav/purge-artifacts@v1
+        with:
+          age: 90
+          include: 'security-scan-diagnostics-*'
+          token: ${{ secrets.CLEANUP_PAT }}
+          repository: ${{ matrix.repo }}
