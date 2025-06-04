@@ -20,7 +20,7 @@ jobs:
     uses: ./.github/workflows/codeql.yml
 
   notify:
-    uses: ./.github/workflows/ntoify.yml
+    uses: ./.github/workflows/notify.yml
 
   sbom:
     uses: ./.github/workflows/sbom.yml
