@@ -2,10 +2,10 @@ name: Reusable Security Scan
 
 on:
   workflow_call:
-    # inputs:
-    #   language:
-    #     required: true
-    #     type: string
+    inputs:
+      language:
+        required: true
+        type: string
 
 jobs:
   scan:

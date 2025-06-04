@@ -10,8 +10,8 @@ on:
 jobs:
   scan:
     uses: ./.github/workflows/scan.yml
-    # with:
-    #   language: dotnet  # Required if scan.yml uses it
+    with:
+      language: dotnet  # Required if scan.yml uses it
 
   trivy:
     uses: ./.github/workflows/trivy.yml
@@ -29,6 +29,11 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   sbom:
     uses: ./.github/workflows/sbom.yml
+    with:
+      language: dotnet
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   test:
     uses: ./.github/workflows/test.yml
