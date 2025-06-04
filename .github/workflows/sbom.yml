@@ -67,3 +67,9 @@ jobs:
           docker run --rm -v "$(pwd):/out" aquasec/trivy image \
             --format cyclonedx --output /out/trivy-sbom-${{ inputs.language }}.json \
             ${{ secrets.DOCKER_USERNAME }}/sbom-${{ inputs.language }}:${{ github.sha }}
+
+  call-audit-log:
+    uses: WahbaMousa-DevOps/CENTRALIZED-GITHUB-ACTIONS/.github/workflows/audit.yml@main
+    with:
+      audit_message: "SBOM job completed successfully."
+      job_name: "sbom"

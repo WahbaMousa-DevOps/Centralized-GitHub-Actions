@@ -82,3 +82,9 @@ jobs:
         run: |
           docker push $DOCKER_USERNAME/${{ inputs.language }}-sample-app:${{ github.sha }}
           docker push $DOCKER_USERNAME/${{ inputs.language }}-sample-app:latest
+
+  call-audit-log:
+    uses: WahbaMousa-DevOps/CENTRALIZED-GITHUB-ACTIONS/.github/workflows/audit.yml@main
+    with:
+      audit_message: "Build job completed successfully."
+      job_name: "build"

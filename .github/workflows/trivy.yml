@@ -26,3 +26,9 @@ jobs:
         with:
           name: trivy-scan-results
           path: trivy-results.txt
+
+  call-audit-log:
+    uses: WahbaMousa-DevOps/CENTRALIZED-GITHUB-ACTIONS/.github/workflows/audit.yml@main
+    with:
+      audit_message: "Trivy job completed successfully."
+      job_name: "trivy"

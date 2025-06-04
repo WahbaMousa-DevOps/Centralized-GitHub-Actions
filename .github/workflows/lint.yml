@@ -30,3 +30,9 @@ jobs:
 
       - name: Run Linter
         run: npm run lint
+
+  call-audit-log:
+    uses: WahbaMousa-DevOps/CENTRALIZED-GITHUB-ACTIONS/.github/workflows/audit.yml@main
+    with:
+      audit_message: "Lint job completed successfully."
+      job_name: "lint"

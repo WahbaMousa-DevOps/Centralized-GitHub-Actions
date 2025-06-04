@@ -39,3 +39,9 @@ jobs:
               exit 1
               ;;
           esac
+
+  call-audit-log:
+    uses: WahbaMousa-DevOps/CENTRALIZED-GITHUB-ACTIONS/.github/workflows/audit.yml@main
+    with:
+      audit_message: "Test job completed successfully."
+      job_name: "test"

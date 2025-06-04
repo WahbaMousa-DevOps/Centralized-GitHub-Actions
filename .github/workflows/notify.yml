@@ -11,9 +11,13 @@ on:
         type: string
     secrets:
       SLACK_WEBHOOK:
-        required: false
+        required: true
       GH_TOKEN:
-        required: false
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   notify:
@@ -34,3 +38,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           gh pr comment ${{ github.event.pull_request.number }} --body "[${{ inputs.status }}] ${{ inputs.message }}"
+
+  call-audit-log:
+    uses: WahbaMousa-DevOps/CENTRALIZED-GITHUB-ACTIONS/.github/workflows/audit.yml@main
+    with:
+      audit_message: "Notify job completed successfully."
+      job_name: "notify"

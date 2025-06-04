@@ -29,3 +29,9 @@ jobs:
           git secrets --install
           git secrets --register-aws
           git secrets --scan || echo "git-secrets scan skipped or failed."
+
+  call-audit-log:
+    uses: WahbaMousa-DevOps/CENTRALIZED-GITHUB-ACTIONS/.github/workflows/audit.yml@main
+    with:
+      audit_message: "Scan job completed successfully."
+      job_name: "scan"

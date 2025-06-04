@@ -1,0 +1,28 @@
+name: Centralized Audit Log Collector
+
+on:
+  workflow_call:
+    inputs:
+      audit_message:
+        required: true
+        type: string
+      job_name:
+        required: true
+        type: string
+
+jobs:
+  log-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Audit Log
+        run: |
+          echo "Job: ${{ inputs.job_name }}" > audit-${{ inputs.job_name }}.log
+          echo "Timestamp: $(date -u)" >> audit-${{ inputs.job_name }}.log
+          echo "Triggered by: ${{ github.actor }}" >> audit-${{ inputs.job_name }}.log
+          echo "Message: ${{ inputs.audit_message }}" >> audit-${{ inputs.job_name }}.log
+
+      - name: Upload Audit Log Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-${{ inputs.job_name }}
+          path: audit-${{ inputs.job_name }}.log
