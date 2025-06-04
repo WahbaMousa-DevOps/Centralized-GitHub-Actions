@@ -29,7 +29,7 @@ jobs:
           curl -sSL \
             -H "Authorization: token ${{ secrets.READ_PAT }}" \
             -o gitleaks.toml \
-            https://raw.githubusercontent.com/yourorg/security-repo/main/gitleaks.toml
+            https://raw.githubusercontent.com/Centralized-GitHub-Actions/.github/gitleaks.toml
 
       # ===== GITLEAKS SCAN =====
       - name: Run Gitleaks (with diagnostic logs)
