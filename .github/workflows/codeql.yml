@@ -2,8 +2,8 @@ name: CodeQL Analysis
 
 on:
   workflow_call:
-  schedule:
-    - cron: '0 3 * * 1'  # Weekly scan
+  # schedule:
+  #   - cron: '0 3 * * 1'  # Weekly scan
 
 jobs:
   analyze:
