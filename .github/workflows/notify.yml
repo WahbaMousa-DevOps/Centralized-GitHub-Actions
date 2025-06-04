@@ -24,16 +24,20 @@ jobs:
     name: Send Notification
     runs-on: ubuntu-latest
 
+    env:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
     steps:
       - name: Send Slack Message
-        if: ${{ secrets.SLACK_WEBHOOK != '' }}
+        if: env.SLACK_WEBHOOK != ''
         run: |
           curl -X POST -H 'Content-type: application/json' \
           --data "{\"text\": \"[${{ inputs.status }}] ${{ inputs.message }}\"}" \
-          ${{ secrets.SLACK_WEBHOOK }}
+          "$SLACK_WEBHOOK"
 
       - name: Add GitHub PR Comment
-        if: ${{ github.event_name == 'pull_request' && secrets.GH_TOKEN != '' }}
+        if: ${{ github.event_name == 'pull_request' && env.GH_TOKEN != '' }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
