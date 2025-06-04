@@ -37,6 +37,8 @@ jobs:
 
   test:
     uses: ./.github/workflows/test.yml
-
+    with:
+        language: dotnet 
+        
   lint:
     uses: ./.github/workflows/lint.yml
