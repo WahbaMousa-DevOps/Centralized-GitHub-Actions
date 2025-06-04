@@ -21,7 +21,12 @@ jobs:
 
   notify:
     uses: ./.github/workflows/notify.yml
-
+    with:
+      status: "Success"
+      message: "CI scan completed successfully"
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   sbom:
     uses: ./.github/workflows/sbom.yml
 
